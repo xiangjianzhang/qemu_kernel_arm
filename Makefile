@@ -1,20 +1,33 @@
 
+KERNEL_DIR := ./linux-4.19/ 
+BUSYBOX_DIR := ./busybox-1.31.1/
+ROOT_DIR := $(shell pwd)
+
 .PHONY: all kernel rootfs config
 all: kernel rootfs
-	cd ./linux-4.19/; cp arch/arm/boot/dts/*.dtb  ../image/; cp arch/arm/boot/*Image   ../image/
+	cd $(KERNEL_DIR); cp arch/arm/boot/dts/*.dtb  $(ROOT_DIR)/image/; cp arch/arm/boot/*Image   $(ROOT_DIR)/image/
 
 kernel: 
-	cd ./linux-4.19/;make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- bzImage -j8
+	cd $(KERNEL_DIR);make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- bzImage -j8
+	cd $(KERNEL_DIR);make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- dtbs -j8
 
 rootfs:
-	cd busybox-1.31.1/; make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- install -j8
-	cd rootfs; sudo ./gen_root_fs.sh; cp  a9rootfs.ext3   ../image/  -av
+	cd $(BUSYBOX_DIR); make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- install -j8
+	sudo ./gen_root_fs.sh $(BUSYBOX_DIR)
+	cp  a9rootfs.ext3   $(ROOT_DIR)/image/  -av
 
 config:
-	cd ./linux-4.19/;make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi-  vexpress_defconfig
+	cd $(KERNEL_DIR);make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi-  vexpress_defconfig
+	mkdir image -p
 
-start:
-	sudo ./start.sh
+run:
+	sudo ./run.sh
 
 clean:
 	echo "clean"
+	cd $(KERNEL_DIR); make clean
+	cd $(BUSYBOX_DIR); make clean 
+	sudo rm -rf rootfs
+	sudo rm -rf tmpfs
+	sudo rm -f a9rootfs.ext3
+	sudo rm image -fr
