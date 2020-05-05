@@ -1,6 +1,6 @@
 
-KERNEL_DIR := ./linux-4.19/ 
-BUSYBOX_DIR := ./busybox-1.31.1/
+KERNEL_DIR := ./kernel_4.19/ 
+BUSYBOX_DIR := ./busy_box/
 ROOT_DIR := $(shell pwd)
 
 .PHONY: all kernel rootfs config
