@@ -2,6 +2,9 @@
 
 #setup
 sh get_source.sh
+
 make config
+
 make all
+
 make run
