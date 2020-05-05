@@ -14,6 +14,15 @@ sudo rm -f a9rootfs.ext3
 sudo mkdir rootfs
 sudo cp $busbox_dir/_install/* rootfs/ -av
 sudo mkdir rootfs/lib
+sudo mkdir rootfs/etc
+sudo mkdir rootfs/etc/init.d
+sudo mkdir rootfs/sys
+sudo mkdir rootfs/proc
+sudo mkdir rootfs/tmp
+sudo mkdir rootfs/var
+sudo mkdir rootfs/home
+sudo cp rcS rootfs/etc/init.d/ -av
+
 #sudo cp -P /usr/arm-linux-gnueabi/lib/* rootfs/lib
 sudo mkdir -p rootfs/dev
 sudo mknod rootfs/dev/tty1 c 4 1
