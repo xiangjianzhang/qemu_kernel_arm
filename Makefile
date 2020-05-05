@@ -17,7 +17,8 @@ rootfs:
 	cp  a9rootfs.ext3   $(ROOT_DIR)/image/  -av
 
 config:
-	cd $(KERNEL_DIR);make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi-  vexpress_defconfig
+	cd $(KERNEL_DIR); make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi-  vexpress_defconfig
+	cd $(BUSYBOX_DIR); make ARCH=arm qemu_arm_jz_defconfig
 	mkdir image -p
 
 run:
