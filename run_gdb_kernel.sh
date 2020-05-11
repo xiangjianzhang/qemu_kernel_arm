@@ -17,5 +17,7 @@ qemu-system-arm \
 	-dtb ./image/vexpress-v2p-ca9.dtb \
 	-nographic \
 	-append "root=/dev/mmcblk0 console=ttyAMA0 rw init=/linuxrc" \
-	-sd ./image/a9rootfs.ext3  
+	-sd ./image/a9rootfs.ext3 \
+	-gdb tcp::1234  -S
+    
 
