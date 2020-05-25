@@ -12,11 +12,26 @@ all: kernel rootfs
 
 kernel: 
 	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) Image -j8 
+	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) modules -j8
 	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) dtbs -j8
+	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) modules_install INSTALL_MOD_PATH=../rootfs/ -j8
 
 rootfs:
 	cd $(BUSYBOX_DIR); make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) install -j8
 	sudo ./gen_root_fs.sh $(BUSYBOX_DIR)
+	cp  a9rootfs.ext3   $(ROOT_DIR)/image/  -av
+
+rootfs_pack:
+	rm rootfs.tar.xz
+	tar cvf rootfs.tar.xz  rootfs/
+
+rootfs_update:
+	dd if=/dev/zero of=a9rootfs.ext3 bs=1M count=1024
+	mkfs.ext3 a9rootfs.ext3
+	sudo mkdir -p tmpfs
+	sudo mount -t ext3 a9rootfs.ext3 tmpfs/ -o loop
+	sudo cp -r rootfs/* tmpfs/
+	sudo umount tmpfs
 	cp  a9rootfs.ext3   $(ROOT_DIR)/image/  -av
 
 config:
