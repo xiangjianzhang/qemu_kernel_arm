@@ -8,7 +8,6 @@ arch=arm64
 
 .PHONY: all kernel rootfs config
 all: kernel rootfs
-	cd $(KERNEL_DIR); cp arch/$(arch)/boot/dts/*.dtb  $(ROOT_DIR)/image/; cp arch/$(arch)/boot/*Image   $(ROOT_DIR)/image/
 
 kernel: 
 	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) Image -j8 
@@ -16,7 +15,9 @@ kernel:
 	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) dtbs -j8
 	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) modules_install INSTALL_MOD_PATH=../rootfs/ -j8
 
-rootfs:
+
+
+build_rootfs:
 	cd $(BUSYBOX_DIR); make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) install -j8
 	sudo ./gen_root_fs.sh $(BUSYBOX_DIR)
 	cp  a9rootfs.ext3   $(ROOT_DIR)/image/  -av
@@ -25,7 +26,7 @@ rootfs_pack:
 	rm rootfs.tar.xz
 	tar cvf rootfs.tar.xz  rootfs/
 
-rootfs_update:
+rootfs:
 	dd if=/dev/zero of=a9rootfs.ext3 bs=1M count=1024
 	mkfs.ext3 a9rootfs.ext3
 	sudo mkdir -p tmpfs
@@ -38,6 +39,8 @@ config:
 	cd $(KERNEL_DIR); make ARCH=$(arch) CROSS_COMPILE=$(COMPILE)  vexpress_$(arch)_defconfig
 	cd $(BUSYBOX_DIR); make ARCH=$(arch) qemu_arm_jz_defconfig
 	mkdir image -p
+	rm roofs -fr
+	tar xvf rootfs.tar.xz
 
 run: install
 	sudo ./run_$(arch).sh
