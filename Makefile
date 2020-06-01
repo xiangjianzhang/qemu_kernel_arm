@@ -17,15 +17,18 @@ kernel:
 
 
 
-build_rootfs:
+rootfs_build:
 	cd $(BUSYBOX_DIR); make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) install -j8
 	sudo ./gen_root_fs.sh $(BUSYBOX_DIR)
 	cp  a9rootfs.ext3   $(ROOT_DIR)/image/  -av
 
 rootfs_pack:
-	rm rootfs.tar.xz
+	rm -fr rootfs.tar.xz
 	tar cvf rootfs.tar.xz  rootfs/
 
+rootfs_use_pack:
+	rm -fr rootfs
+	sudo tar xvf rootfs.tar.xz
 rootfs:
 	dd if=/dev/zero of=a9rootfs.ext3 bs=1M count=1024
 	mkfs.ext3 a9rootfs.ext3
