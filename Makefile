@@ -2,7 +2,7 @@
 KERNEL_DIR := ./kernel_4.19/ 
 BUSYBOX_DIR := ./busy_box/
 ROOT_DIR := $(shell pwd)
-COMPILE = $(shell pwd)/toolchain/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
+COMPILE = $(shell pwd)/toolchain/aarch64-linux-gnu/bin/aarch64-linux-gnu-
 arch=arm64
 
 
@@ -11,9 +11,9 @@ all: kernel rootfs
 
 kernel: 
 	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) Image -j8 
-	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) modules -j8
-	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) dtbs -j8
-	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) modules_install INSTALL_MOD_PATH=../rootfs/ -j8
+	#cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) modules -j8
+	#cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) dtbs -j8
+	#cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) modules_install INSTALL_MOD_PATH=../rootfs/ -j8
 
 
 
@@ -43,13 +43,15 @@ config:
 	cd $(BUSYBOX_DIR); make ARCH=$(arch) qemu_arm_jz_defconfig
 	mkdir image -p
 	rm roofs -fr
-	tar xvf rootfs.tar.xz
+	sudo tar xvf rootfs.tar.xz
+	./gen_nvme_namespace.sh 
 
 run: install
 	sudo ./run_$(arch).sh
 
 install:
 	cd $(KERNEL_DIR); cp arch/$(arch)/boot/dts/arm/*.dtb  $(ROOT_DIR)/image/; cp arch/$(arch)/boot/*Image   $(ROOT_DIR)/image/
+
 clean:
 	echo "clean"
 	cd $(KERNEL_DIR); make clean
@@ -58,3 +60,4 @@ clean:
 	sudo rm -rf tmpfs
 	sudo rm -f a9rootfs.ext3
 	sudo rm image -fr
+	rm *.raw
