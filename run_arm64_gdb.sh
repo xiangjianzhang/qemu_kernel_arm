@@ -6,7 +6,7 @@ qemu-system-aarch64 \
 	-smp 4  \
 	-cpu cortex-a57 \
 	-M virt \
-	-hda image/a9rootfs.ext3 \
+	-hda image/rootfs.ext3 \
 	-drive file=./nvme00.raw,if=none,id=D00 -device nvme,drive=D00,serial=6600 \
 	-drive file=./nvme01.raw,if=none,id=D01 -device nvme,drive=D01,serial=6601 \
 	-drive file=./nvme02.raw,if=none,id=D02 -device nvme,drive=D02,serial=6602 \

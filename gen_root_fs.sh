@@ -23,7 +23,7 @@ sudo mkdir rootfs/var
 sudo mkdir rootfs/home
 sudo cp rcS rootfs/etc/init.d/ -av
 
-#sudo cp -P /usr/arm-linux-gnueabi/lib/* rootfs/lib
+sudo cp toolchain/aarch64-linux-gnu/aarch64-linux-gnu/libc/*  rootfs/  -av
 sudo mkdir -p rootfs/dev
 sudo mknod rootfs/dev/tty1 c 4 1
 sudo mknod rootfs/dev/tty2 c 4 2
@@ -31,11 +31,13 @@ sudo mknod rootfs/dev/tty3 c 4 3
 sudo mknod rootfs/dev/tty4 c 4 4
 sudo  cp rcS  /etc/init.d/
 
-dd if=/dev/zero of=a9rootfs.ext3 bs=1M count=32
-mkfs.ext3 a9rootfs.ext3
+rm -fr rootfs.ext3 
+touch rootfs.ext3 
+truncate  --size 1G rootfs.ext3 
+mkfs.ext3 rootfs.ext3
 
 sudo mkdir tmpfs
-sudo mount -t ext3 a9rootfs.ext3 tmpfs/ -o loop
+sudo mount -t ext3 rootfs.ext3 tmpfs/ -o loop
 sudo cp -r rootfs/* tmpfs/
 sudo umount tmpfs
 
