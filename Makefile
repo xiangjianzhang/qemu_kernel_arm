@@ -48,9 +48,11 @@ config:
 
 run: install
 	sudo ./run_$(arch).sh
-
+gdb: install
+	sudo ./run_$(arch)_gdb.sh  
 install:
-	cd $(KERNEL_DIR); cp arch/$(arch)/boot/dts/arm/*.dtb  $(ROOT_DIR)/image/; cp arch/$(arch)/boot/*Image   $(ROOT_DIR)/image/
+	#cd $(KERNEL_DIR);cp arch/$(arch)/boot/dts/arm/*.dtb  $(ROOT_DIR)/image/ 
+	cd $(KERNEL_DIR);cp arch/$(arch)/boot/*Image   $(ROOT_DIR)/image/
 
 clean:
 	echo "clean"
