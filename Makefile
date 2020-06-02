@@ -7,7 +7,7 @@ COMPILE = $(shell pwd)/toolchain/aarch64-linux-gnu/bin/aarch64-linux-gnu-
 arch=arm64
 
 .PHONY: all kernel rootfs config
-all: kernel rootfs
+all: kernel rootfs_build
 
 kernel: 
 	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) Image -j8 
