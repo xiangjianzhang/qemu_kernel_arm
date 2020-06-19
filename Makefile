@@ -7,13 +7,13 @@ COMPILE = $(shell pwd)/toolchain/aarch64-linux-gnu/bin/aarch64-linux-gnu-
 arch=arm64
 
 .PHONY: all kernel rootfs config
-all: kernel rootfs_build
+all:  rootfs_build kernel install
 
 kernel: 
 	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) Image -j8 
-	#cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) modules -j8
+	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) modules -j8
 	#cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) dtbs -j8
-	#cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) modules_install INSTALL_MOD_PATH=../rootfs/ -j8
+	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) modules_install INSTALL_MOD_PATH=../rootfs/ -j8
 
 kernel_menuconfig: 
 	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) menuconfig 
@@ -41,18 +41,18 @@ rootfs:
 	cp  rootfs.ext3   $(ROOT_DIR)/image/  -av
 
 config:
-	cd $(KERNEL_DIR); make ARCH=$(arch) CROSS_COMPILE=$(COMPILE)  vexpress_$(arch)_defconfig
+	cd $(KERNEL_DIR); make ARCH=$(arch) CROSS_COMPILE=$(COMPILE)  nvme_$(arch)_defconfig
 	cd $(BUSYBOX_DIR); make ARCH=$(arch) qemu_arm_jz_defconfig
 	mkdir image -p
 	rm roofs -fr
-	sudo tar xvf rootfs.tar.xz
+	#sudo tar xvf rootfs.tar.xz
 	./gen_nvme_namespace.sh 
 
-run: install
+run: 
 	sudo ./run_$(arch).sh
 gdb: install
 	sudo ./run_$(arch)_gdb.sh  
-install:
+install: rootfs
 	#cd $(KERNEL_DIR);cp arch/$(arch)/boot/dts/arm/*.dtb  $(ROOT_DIR)/image/ 
 	cd $(KERNEL_DIR);cp arch/$(arch)/boot/*Image   $(ROOT_DIR)/image/
 
@@ -67,5 +67,4 @@ clean:
 	sudo rm -rf rootfs
 	sudo rm -rf tmpfs
 	sudo rm -f rootfs.ext3
-	sudo rm image -fr
 	rm *.raw
