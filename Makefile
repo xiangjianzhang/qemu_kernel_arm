@@ -1,18 +1,20 @@
 
-KERNEL_DIR := ./kernel_4.19/ 
-BUSYBOX_DIR := ./busy_box/
 ROOT_DIR := $(shell pwd)
-APP_DIR := $(ROOT_DIR)/app/
-COMPILE = $(shell pwd)/toolchain/aarch64-linux-gnu/bin/aarch64-linux-gnu-
+KERNEL_DIR := $(ROOT_DIR)/kernel_4.19/ 
+BUSYBOX_DIR := $(ROOT_DIR)/busy_box/
+APP_DIR := $(ROOT_DIR)/nvme/
+COMPILE = $(ROOT_DIR)/toolchain/aarch64-linux-gnu/bin/aarch64-linux-gnu-
+APP_DRIVER_DIR := $(ROOT_DIR)/nvme/kernel
 arch=arm64
 
 .PHONY: all kernel rootfs config
-all:  rootfs_build kernel install
+all:  rootfs_build kernel kernel_mod install
 
 kernel: 
 	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) Image -j8 
-	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) modules -j8
 	#cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) dtbs -j8
+kernel_mod:
+	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) modules -j8
 	cd $(KERNEL_DIR);make ARCH=$(arch) CROSS_COMPILE=$(COMPILE) modules_install INSTALL_MOD_PATH=../rootfs/ -j8
 
 kernel_menuconfig: 
@@ -56,9 +58,9 @@ install: rootfs
 	#cd $(KERNEL_DIR);cp arch/$(arch)/boot/dts/arm/*.dtb  $(ROOT_DIR)/image/ 
 	cd $(KERNEL_DIR);cp arch/$(arch)/boot/*Image   $(ROOT_DIR)/image/
 
-app_install: 
-	cd $(APP_DIR);make ARCH=$(arch)  CROSS_COMPILE=$(COMPILE)  all
-	cd $(APP_DIR);make INSTALL_DIR=$(ROOT_DIR)/rootfs/home/   install
+driver_install: 
+	cd $(APP_DRIVER_DIR);make ARCH=$(arch)  CROSS_COMPILE=$(COMPILE) KERNELDIR=$(KERNEL_DIR)
+	cd $(APP_DRIVER_DIR);make INSTALL_DIR=$(ROOT_DIR)/rootfs/home/   install
 
 clean:
 	echo "clean"
