@@ -34,13 +34,16 @@ rootfs_use_pack:
 	rm -fr rootfs
 	sudo tar xvf rootfs.tar.xz
 rootfs:
-	dd if=/dev/zero of=rootfs.ext3 bs=1M count=1024
+	#dd if=/dev/zero of=rootfs.ext3 bs=1M count=1024
+	touch    rootfs.ext3
+	truncate rootfs.ext3 --size 1G
 	mkfs.ext3 rootfs.ext3
 	sudo mkdir -p tmpfs
 	sudo mount -t ext3 rootfs.ext3 tmpfs/ -o loop
 	sudo cp -r rootfs/* tmpfs/
+	sleep 1
 	sudo umount tmpfs
-	cp  rootfs.ext3   $(ROOT_DIR)/image/  -av
+	mv  rootfs.ext3   $(ROOT_DIR)/image/  -v
 
 config:
 	cd $(KERNEL_DIR); make ARCH=$(arch) CROSS_COMPILE=$(COMPILE)  nvme_$(arch)_defconfig
@@ -52,7 +55,7 @@ config:
 
 run: 
 	sudo ./run_$(arch).sh
-gdb: install
+gdb: 
 	sudo ./run_$(arch)_gdb.sh  
 install: rootfs
 	#cd $(KERNEL_DIR);cp arch/$(arch)/boot/dts/arm/*.dtb  $(ROOT_DIR)/image/ 
@@ -61,6 +64,12 @@ install: rootfs
 driver_install: 
 	cd $(APP_DRIVER_DIR);make ARCH=$(arch)  CROSS_COMPILE=$(COMPILE) KERNELDIR=$(KERNEL_DIR)
 	cd $(APP_DRIVER_DIR);make INSTALL_DIR=$(ROOT_DIR)/rootfs/home/   install
+
+nvme_test:
+	make -C ./nvme clean
+	make -C ./nvme ROOT_DIR=$(shell pwd)/ install
+	make rootfs
+	make run 
 
 clean:
 	echo "clean"

@@ -1,4 +1,5 @@
 kernel_4.19/
 busy_box/
 rootfs/
+nvme/
 *.raw
