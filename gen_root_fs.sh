@@ -9,7 +9,7 @@
 busbox_dir=$1
 sudo rm -rf rootfs
 sudo rm -rf tmpfs
-sudo rm -f a9rootfs.ext3
+sudo rm -f a9rootfs.ext2
 
 sudo mkdir rootfs
 sudo cp $busbox_dir/_install/* rootfs/ -av
@@ -31,13 +31,13 @@ sudo mknod rootfs/dev/tty3 c 4 3
 sudo mknod rootfs/dev/tty4 c 4 4
 sudo  cp rcS  /etc/init.d/
 
-rm -fr rootfs.ext3 
-touch rootfs.ext3 
-truncate  --size 1G rootfs.ext3 
-mkfs.ext3 rootfs.ext3
+rm -fr rootfs.ext2 
+touch rootfs.ext2 
+truncate  --size 1G rootfs.ext2 
+mkfs.ext2 rootfs.ext2
 
 sudo mkdir tmpfs
-sudo mount -t ext3 rootfs.ext3 tmpfs/ -o loop
+sudo mount -t ext2 rootfs.ext2 tmpfs/ -o loop
 sudo cp -r rootfs/* tmpfs/
 sudo umount tmpfs
 

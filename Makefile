@@ -52,6 +52,8 @@ config:
 	rm roofs -fr
 	#sudo tar xvf rootfs.tar.xz
 	./gen_nvme_namespace.sh 
+busy_box_config:
+	cd $(BUSYBOX_DIR); make ARCH=$(arch) menuconfig
 
 run: 
 	sudo ./run_$(arch).sh

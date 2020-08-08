@@ -2,3 +2,5 @@ mount -t proc proc /proc
 mount -t sysfs sysfs /sys 
 echo /sbin/mdev > /proc/sys/kernel/hotplug 
 mdev -s
+
+#cd /home/_install/; sh test.sh

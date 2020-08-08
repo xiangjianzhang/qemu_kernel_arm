@@ -3,12 +3,13 @@ qemu-system-aarch64 \
 	-nographic \
 	-append "root=/dev/vda console=ttyAMA0 rootfstype=ext3 init=/linuxrc rw" \
 	-m 2048M \
-	-smp 4  \
+	-smp 1  \
 	-cpu cortex-a57 \
 	-M virt \
 	-hda image/rootfs.ext3 \
 	\
-	-device vfio-pci,host=00:03:0.0
+    	-device ioh3420,id=root_port1,chassis=1,slot=1,bus=pcie.0 \
+	-device vfio-pci,host=00:03:0.0,id=hostdev0,bus=root_port1  \
 
 #  has some issue
 #    -device ioh3420,id=root_port6,chassis=7,slot=1,bus=pcie.0,addr=8, \
