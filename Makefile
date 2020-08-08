@@ -3,7 +3,7 @@ ROOT_DIR := $(shell pwd)
 KERNEL_DIR := $(ROOT_DIR)/kernel_4.19/ 
 BUSYBOX_DIR := $(ROOT_DIR)/busy_box/
 APP_DIR := $(ROOT_DIR)/nvme/
-COMPILE = $(ROOT_DIR)/toolchain/aarch64-linux-gnu/bin/aarch64-linux-gnu-
+COMPILE = aarch64-linux-gnu-
 APP_DRIVER_DIR := $(ROOT_DIR)/nvme/kernel
 arch=arm64
 
